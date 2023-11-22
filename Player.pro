@@ -21,6 +21,7 @@ HEADERS += \
     frame_queue.hpp \
     packet_queue.hpp \
     player.h \
+    state.h \
     util.h \
     queue.hpp \
     video_output.h
@@ -28,7 +29,7 @@ HEADERS += \
 
 mac {
     INCLUDEPATH += "/usr/local/include/"
-        INCLUDEPATH += /usr/local/include/SDL2
+    INCLUDEPATH += /usr/local/include/SDL2
     LIBS += -L/usr/local/lib -lavcodec -lavdevice -lavfilter -lavformat -lavutil -lpostproc -lswscale -lswresample
-LIBS += /usr/local/lib/libSDL2.dylib
+    LIBS += /usr/local/lib/libSDL2.dylib
 }

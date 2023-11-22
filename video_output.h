@@ -2,6 +2,8 @@
 #define VIDEOOUTPUT_H
 
 #include <thread>
+
+#include "state.h"
 #include "frame_queue.hpp"
 #include "av_publish_time.h"
 
@@ -47,6 +49,7 @@ private:
     SDL_Texture* texture_ = NULL;
 
     AVPublishTime& av_time_ = AVPublishTime::GetInstance();
+    State& state_ = State::GetInstance();
 
 };
 

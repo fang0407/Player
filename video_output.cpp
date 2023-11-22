@@ -67,9 +67,28 @@ void VideoOutput::Run()
     while (!quit_) {
         RefreshLoop(&event_);
         switch (event_.type) {
-            case SDL_QUIT:
-                quit_ = true;
+        case SDL_KEYDOWN: {
+            switch (event_.key.keysym.sym) {
+            case SDLK_SPACE:
+                state_.paused_ = !state_.paused_;
                 break;
+            }
+            break;
+        }
+        case SDL_WINDOWEVENT:{
+            switch (event_.window.event) {
+            case SDL_WINDOWEVENT_RESIZED: {
+                SDL_RenderSetViewport(renderer_, NULL);
+                video_width_= event_.window.data1;
+                video_height_ = event_.window.data2;
+                break;
+            }
+            }
+            break;
+        }
+        case SDL_QUIT:
+            quit_ = true;
+            break;
         }
     }
 }
@@ -84,7 +103,11 @@ void VideoOutput::RefreshLoop(SDL_Event *event)
             std::this_thread::sleep_for(std::chrono::milliseconds(int64_t(remaining_time * 1000.0)));
 
         remaining_time = 0.01;
-        VideoRefresh(remaining_time);
+
+        if (!state_.paused_) {
+            VideoRefresh(remaining_time);
+        }
+
         SDL_PumpEvents();
     }
 }
@@ -101,9 +124,7 @@ void VideoOutput::VideoRefresh(double &remaining_time)
 
 
     double pts = frame->pts * av_q2d(time_base_);
-//        std::cout << "video pts" << pts << std::endl;
     double diff =  pts - av_time_.GetClock();
-//        std::cout << "video pts" << av_time_.GetClock() << std::endl;
     if (diff > 0) {
         remaining_time = std::min(diff, remaining_time);
         return;
