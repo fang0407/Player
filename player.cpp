@@ -20,25 +20,32 @@ bool Player::Init(const std::string& file_name)
         return false;
     }
 
-    ret = video_decoder_.Open(demuxer_.GetFormatContext(), demuxer_.GetVideoStreamIndex());
+    ret = video_decoder_.Open(demuxer_.GetFormatContext(),
+                              demuxer_.GetVideoStreamIndex());
     if (!ret) {
         DEBUG("video_decoder_.Open failed");
         return false;
     }
 
-    ret = video_output_.Init(&video_frame_queue_, demuxer_.GetVideoWidth(), demuxer_.GetVideoHeight(), demuxer_.GetVideoTimeBase());
+    ret = video_output_.Init(&video_frame_queue_,
+                             demuxer_.GetVideoWidth(),
+                             demuxer_.GetVideoHeight(),
+                             demuxer_.GetVideoTimeBase(),
+                             demuxer_.GetFormatContext());
     if (!ret) {
         DEBUG("video_output_.Init failed");
         return false;
     }
 
-    ret = audio_decoder_.Init(&audio_packet_queue_, &audio_frame_queue_);
+    ret = audio_decoder_.Init(&audio_packet_queue_,
+                              &audio_frame_queue_);
     if (!ret) {
         DEBUG("audio_decoder_.Init failed");
         return false;
     }
 
-    ret = audio_decoder_.Open(demuxer_.GetFormatContext(), demuxer_.GetAudioStreamIndex());
+    ret = audio_decoder_.Open(demuxer_.GetFormatContext(),
+                              demuxer_.GetAudioStreamIndex());
     if (!ret) {
         DEBUG("audio_decoder_.Open failed");
         return false;
@@ -51,7 +58,9 @@ bool Player::Init(const std::string& file_name)
     audio_params.sample_rate = demuxer_.GetSampleRate();
     audio_params.frame_size = demuxer_.GetFrameSize();
 
-    ret = audio_output_.Init(&audio_frame_queue_, audio_params, demuxer_.GetAudioTimeBase());
+    ret = audio_output_.Init(&audio_frame_queue_,
+                             audio_params,
+                             demuxer_.GetAudioTimeBase());
     if (!ret) {
         DEBUG("audio_output_.Init failed");
         return false;

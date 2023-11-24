@@ -105,6 +105,11 @@ bool Decoder::Loop()
         std::shared_ptr<AVPacket> pkt;
         packet_queue_->Pop(pkt);
 
+        if (!pkt) {
+            avcodec_flush_buffers(codec_ctx_);
+            continue;
+        }
+
         ret = avcodec_send_packet(codec_ctx_, pkt.get());
         if (ret != 0) {
             DEBUG("avcodec_send_packet failed :%s", AVStrError(ret).c_str());

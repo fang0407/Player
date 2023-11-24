@@ -189,7 +189,19 @@ void Demuxer::Loop()
     };
 
     while (running_) {
-        if (video_packet_queue_->Size() > 100 || audio_packet_queue_->Size() > 100) {
+        int seek_ts = state_.GetSeekTs();
+        if (seek_ts != -1) {
+            ret = avformat_seek_file(fmt_ctx_, -1, INT_MIN, seek_ts, INT_MAX, 0);
+            if (ret < 0)
+                DEBUG("%s: seeking failed, seek_ts:%d", file_name_.c_str(), seek_ts);
+
+            state_.SetSeekTs(-1);
+
+            audio_packet_queue_->Push(NULL);
+            video_packet_queue_->Push(NULL);
+        }
+
+        if (video_packet_queue_->Size() > 10 || audio_packet_queue_->Size() > 10) {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
             continue;
         }

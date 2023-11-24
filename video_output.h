@@ -25,7 +25,7 @@ public:
     VideoOutput();
     ~VideoOutput();
 
-    bool Init(FrameQueue* frame_queue, int width, int height, AVRational time_base);
+    bool Init(FrameQueue* frame_queue, int width, int height, AVRational time_base, AVFormatContext* fmt_ctx);
     void Run();
 
 private:
@@ -39,6 +39,7 @@ private:
     int video_height_;
     AVRational time_base_;
     uint32_t pixformat_ = SDL_PIXELFORMAT_IYUV;
+    AVFormatContext* fmt_ctx_ = NULL;
 
     bool quit_ = false;
 

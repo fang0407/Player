@@ -128,6 +128,8 @@ public:
     void peek(T& data)
     {
         std::unique_lock<Mutex> lck(mu_);
+        if (queue_.empty())
+            return;
         data = queue_.front();
     }
 

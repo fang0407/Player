@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 11.0.2, 2023-11-20T21:37:18. -->
+<!-- Written by QtCreator 11.0.2, 2023-11-23T21:40:35. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -243,6 +243,7 @@
     <value type="bool" key="PE.EnvironmentAspect.PrintOnRun">false</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/Users/mac/WorkSpace/QT/Player/Player.pro</value>
     <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/Users/mac/WorkSpace/QT/Player/Player.pro</value>
+    <value type="QString" key="RunConfiguration.Arguments">~/Desktop/time.mp4</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>

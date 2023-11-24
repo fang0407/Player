@@ -23,10 +23,15 @@ VideoOutput::~VideoOutput()
     DEBUG("~VideoOutput()");
 }
 
-bool VideoOutput::Init(FrameQueue *frame_queue, int width, int height, AVRational time_base)
+bool VideoOutput::Init(FrameQueue *frame_queue, int width, int height, AVRational time_base, AVFormatContext* fmt_ctx)
 {
     if (!frame_queue) {
         DEBUG("frame_queue is null");
+        return false;
+    }
+
+    if (!fmt_ctx) {
+        DEBUG("fmt_ctx is null");
         return false;
     }
 
@@ -34,6 +39,10 @@ bool VideoOutput::Init(FrameQueue *frame_queue, int width, int height, AVRationa
     video_width_ = width;
     video_height_ = height;
     time_base_ = time_base;
+    fmt_ctx_ = fmt_ctx;
+
+    state_.SetDisplayWidth(video_width_);
+    state_.SetDisplayHeight(video_height_);
 
     window_ = SDL_CreateWindow("Title",
                                SDL_WINDOWPOS_UNDEFINED,
@@ -67,23 +76,31 @@ void VideoOutput::Run()
     while (!quit_) {
         RefreshLoop(&event_);
         switch (event_.type) {
-        case SDL_KEYDOWN: {
+        case SDL_KEYDOWN:
             switch (event_.key.keysym.sym) {
             case SDLK_SPACE:
-                state_.paused_ = !state_.paused_;
+                state_.SetPause(!state_.IsPaused());
                 break;
             }
             break;
-        }
-        case SDL_WINDOWEVENT:{
+        case SDL_WINDOWEVENT:
             switch (event_.window.event) {
-            case SDL_WINDOWEVENT_RESIZED: {
+            case SDL_WINDOWEVENT_RESIZED:
                 SDL_RenderSetViewport(renderer_, NULL);
-                video_width_= event_.window.data1;
+                state_.SetDisplayWidth(event_.window.data1);
+                state_.SetDisplayHeight(event_.window.data2);
+                video_width_ = event_.window.data1;
                 video_height_ = event_.window.data2;
                 break;
             }
-            }
+            break;
+        case SDL_MOUSEBUTTONDOWN: {
+            if (event_.button.button != SDL_BUTTON_RIGHT)
+                break;
+            double x = event_.button.x;
+            double frac = x / state_.GetDisplayWidth();
+            int64_t ts = frac * fmt_ctx_->duration;
+            state_.SetSeekTs(ts);
             break;
         }
         case SDL_QUIT:
@@ -104,7 +121,7 @@ void VideoOutput::RefreshLoop(SDL_Event *event)
 
         remaining_time = 0.01;
 
-        if (!state_.paused_) {
+        if (!state_.IsPaused()) {
             VideoRefresh(remaining_time);
         }
 
@@ -114,8 +131,10 @@ void VideoOutput::RefreshLoop(SDL_Event *event)
 
 void VideoOutput::VideoRefresh(double &remaining_time)
 {
-    std::shared_ptr<AVFrame> frame;
+    std::shared_ptr<AVFrame> frame = NULL;
     frame_queue_->Peek(frame);
+    if (!frame)
+        return;
 
     if (frame->format != AVPixelFormat::AV_PIX_FMT_YUV420P) {
         DEBUG("AVFrame format need convert");
@@ -125,7 +144,7 @@ void VideoOutput::VideoRefresh(double &remaining_time)
 
     double pts = frame->pts * av_q2d(time_base_);
     double diff =  pts - av_time_.GetClock();
-    if (diff > 0) {
+    if (diff > 0 && diff < 1) {
         remaining_time = std::min(diff, remaining_time);
         return;
     }

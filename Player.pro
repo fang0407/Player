@@ -10,6 +10,7 @@ SOURCES += \
         demuxer.cpp \
         main.cpp \
         player.cpp \
+        state.cpp \
         util.cpp \
         video_output.cpp
 
@@ -28,8 +29,9 @@ HEADERS += \
 
 
 mac {
-    INCLUDEPATH += "/usr/local/include/"
+    INCLUDEPATH += /Users/mac/WorkSpace/3rdparty/FFmpeg-n4.2.1/install/include
+    LIBS += -L/Users/mac/WorkSpace/3rdparty/FFmpeg-n4.2.1/install/lib -lavcodec -lavdevice -lavfilter -lavformat -lavutil  -lswscale -lswresample
+
     INCLUDEPATH += /usr/local/include/SDL2
-    LIBS += -L/usr/local/lib -lavcodec -lavdevice -lavfilter -lavformat -lavutil -lpostproc -lswscale -lswresample
     LIBS += /usr/local/lib/libSDL2.dylib
 }

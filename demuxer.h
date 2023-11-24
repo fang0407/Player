@@ -4,6 +4,7 @@
 #include <thread>
 #include <atomic>
 
+#include "state.h"
 #include "packet_queue.hpp"
 
 class Demuxer
@@ -49,6 +50,8 @@ private:
 
     PacketQueue* video_packet_queue_ = NULL;
     PacketQueue* audio_packet_queue_ = NULL;
+
+    State& state_ = State::GetInstance();
 };
 
 #endif // DEMUXER_H

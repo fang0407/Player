@@ -10,7 +10,7 @@ void FillAudioPcm(void *userdata, Uint8 * stream, int len)
         if (that->audio_buf_size_ == that->audio_buf_index_) {
             that->audio_buf_index_ = 0;
 
-            if (that->state_.paused_) {
+            if (that->state_.IsPaused()) {
                 //使用audio_buf_ == NULL作为播放静音的标志
                 that->audio_buf_ = NULL;
                 that->audio_buf_size_ = len;
@@ -106,7 +106,7 @@ void FillAudioPcm(void *userdata, Uint8 * stream, int len)
         that->audio_buf_index_ += copy_len;
     }
 
-    if (that->pts_ != AV_NOPTS_VALUE && !that->state_.paused_) {
+    if (that->pts_ != AV_NOPTS_VALUE && !that->state_.IsPaused()) {
         double pts = that->pts_ * av_q2d(that->time_base_);
 //        DEBUG("audio pts:%lf", pts);
         that->av_time_.SetClock(pts);
